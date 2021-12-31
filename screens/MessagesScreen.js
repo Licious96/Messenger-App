@@ -11,11 +11,11 @@ import Constants from 'expo-constants';
 import moment from 'moment';
 
 const MessagesScreen = ({ navigation }) => {
-    const [userId, setUserId] = useState(null)
     const [userObj, setUserObj] = useState({})
     const [friends, setFriends] = useState([])
     const { manifest } = Constants
     const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
+    const webUrl = `https://messenger.stokoza.co.za/public/api`
 
     useEffect(async () => {
         const user_idd = await AsyncStorage.getItem("@user_id")
@@ -31,14 +31,14 @@ const MessagesScreen = ({ navigation }) => {
                 const user_id = await AsyncStorage.getItem("@user_id")
                 const id = JSON.parse(user_id)
                 try {
-                    const res = await axios.get(`${url}/getUser/${id}`)
+                    const res = await axios.get(`${webUrl}/getUser/${id}`)
                     setUserObj(res.data)
                 } catch (e) {
                     console.log(e)
                 }
             };
             fetchUser();
-        }, [userObj])
+        }, [])
     );
 
     useFocusEffect(
@@ -47,14 +47,14 @@ const MessagesScreen = ({ navigation }) => {
                 const user_id = await AsyncStorage.getItem("@user_id")
                 const id = JSON.parse(user_id)
                 try {
-                    const res = await axios.get(`${url}/getFriends/${id}`)
+                    const res = await axios.get(`${webUrl}/getFriends/${id}`)
                     setFriends(res.data)
                 } catch (e) {
                     console.log(e)
                 }
             };
             fetchUser();
-        }, [friends])
+        }, [])
     );
 
     const logout = async () => {
@@ -148,7 +148,7 @@ const MessagesScreen = ({ navigation }) => {
 
                 <Container >
                     <FlatList
-                        data={friends}
+                        data={friends.sort((a,b)=> b.created_at - a.created_at)}
                         keyExtractor={item => item.id}
                         ListEmptyComponent={emptyScreen}
                         renderItem={({ item }) => (
@@ -165,7 +165,7 @@ const MessagesScreen = ({ navigation }) => {
                                             <UserName numberOfLines={1}>{item.username}</UserName>
                                             <PostTime>{moment(item.created_at).fromNow()}</PostTime>
                                         </UserInfoText>
-                                        <MessageText numberOfLines={2}>This is a text messages</MessageText>
+                                        <MessageText numberOfLines={2}>{item.email}</MessageText>
                                     </TextSection>
                                 </UserInfo>
                             </Card>

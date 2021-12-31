@@ -12,6 +12,7 @@ const LoginScreen = ({ navigation }) => {
     const [errors, setErrors] = useState('')
     const { manifest } = Constants
     const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
+    const webUrl = `https://messenger.stokoza.co.za/public/api`
 
     const loginFunc = async() => {
         const formData = new FormData()
@@ -19,7 +20,7 @@ const LoginScreen = ({ navigation }) => {
         formData.append('password', password)
 
         try {
-            const res = await axios.post(`${url}/login`, formData)
+            const res = await axios.post(`${webUrl}/login`, formData)
             const jsonValue = JSON.stringify(res.data.id)
             await AsyncStorage.setItem('@user_id', jsonValue)
             navigation.navigate("Messages")

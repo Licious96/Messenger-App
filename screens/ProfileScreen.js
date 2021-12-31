@@ -18,6 +18,7 @@ const ProfileScreen = ({route, navigation}) => {
     const [errors, setErrors] = useState('')
     const { manifest } = Constants
     const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
+    const webUrl = `https://messenger.stokoza.co.za/public/api`
     
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -36,7 +37,7 @@ const ProfileScreen = ({route, navigation}) => {
         formData.append('username', username)
         formData.append('image', image)
         try {
-            const res = await axios.post(`${url}/updateProfile/${userId}`, formData)
+            const res = await axios.post(`${webUrl}/updateProfile/${userId}`, formData)
             ToastAndroid.show("Your profile was updated", ToastAndroid.SHORT);
         } catch (error) {
             setErrors(error.response.data)

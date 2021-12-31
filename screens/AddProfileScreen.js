@@ -13,6 +13,7 @@ const AddProfileScreen = ({ navigation }) => {
     const [error, setError] = useState('')
     const { manifest } = Constants
     const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
+    const webUrl = `https://messenger.stokoza.co.za/public/api`
 
     useEffect(async () => {
         const user_id = await AsyncStorage.getItem("@user_id")
@@ -49,7 +50,7 @@ const AddProfileScreen = ({ navigation }) => {
         formData.append('image', image)
 
         try {
-            const res = await axios.post(`${url}/addProfile/${userId}`, formData)
+            const res = await axios.post(`${webUrl}/addProfile/${userId}`, formData)
             console.log(res.data)
             navigation.navigate("Messages")
         } catch (error) {

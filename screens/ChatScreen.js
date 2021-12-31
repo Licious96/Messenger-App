@@ -16,10 +16,11 @@ const ChatScreen = ({route, navigation}) => {
     const [messages, setMessages] = useState([]);
     const { manifest } = Constants
     const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
+    const webUrl = `https://messenger.stokoza.co.za/public/api`
 
     useEffect(async() => {
         try {
-            const res = await axios.get(`${url}/getMessages/${userOneObj.id}/${userTwoObj.id}`);
+            const res = await axios.get(`${webUrl}/getMessages/${userOneObj.id}/${userTwoObj.id}`);
 
             let msg = res.data.map((msg)=> ({
                 _id: msg.id,
@@ -27,8 +28,8 @@ const ChatScreen = ({route, navigation}) => {
                 createdAt: msg.created_at,
                 user: {
                     _id: msg.user_one,
-                    name: 'React Native',
-                    avatar: userTwoObj.image,
+                    name: userOneObj.id == msg.user_one ? userOneObj.username : userTwoObj.username,
+                    avatar: userOneObj.id == msg.user_one ? userOneObj.image : userTwoObj.image,
                 }
             }))
             const sorted = msg.reverse()
@@ -42,7 +43,7 @@ const ChatScreen = ({route, navigation}) => {
 
         const cusText = messages[0].text;
         try {
-            await axios.get(`${url}/sendMsg/${userOneObj.id}/${userTwoObj.id}/${cusText}`)
+            await axios.get(`${webUrl}/sendMsg/${userOneObj.id}/${userTwoObj.id}/${cusText}`)
             console.log('message send to database')
         } catch (error) {
             console.log(error.response.data)

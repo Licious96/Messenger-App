@@ -12,12 +12,13 @@ const AddContact = ({route, navigation}) => {
     const [msgError, setMsgError] = useState('')
     const { manifest } = Constants
     const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
+    const webUrl = `https://messenger.stokoza.co.za/public/api`
 
     const addContact = async() => {
         const formData = new FormData()
         formData.append('contact', contact)
         try {
-            const res = await axios.post(`${url}/addContact/${userId}`, formData)
+            const res = await axios.post(`${webUrl}/addContact/${userId}`, formData)
             ToastAndroid.show("Contact added", ToastAndroid.SHORT);
             navigation.navigate('Messages')
             setMsgError('')

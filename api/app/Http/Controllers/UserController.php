@@ -124,21 +124,37 @@ class UserController extends Controller
     }
 
     public function getFriends($id){
+
         $ids1 = Contacts::where('user_one', $id)->pluck('user_two')->toArray();
         $ids2 = Contacts::where('user_two', $id)->pluck('user_one')->toArray();
         $ids = array_merge($ids1, $ids2);
         $sorted = User::whereIn('id', $ids)->get();    
         return response()->json($sorted, 200);
-    }
 
-    public function sendMessage(Request $request, $id){
-        $user = Messages::create([
-            'sender_id' => $request['contacts'],
-            'email' => $request['email'],
-            'password' => bcrypt($request['password'])
-        ]);
+        // $array = [];
+        // foreach ($sorted as $key => $friends) {
+        //     $array[] = $friends->id;
+        // }
 
-        return response()->json($user, 200);
+        // $msg = Messages::whereIn('user_one', $array)->orWhereIn('user_two', $array)->get();
+
+        // $array1 = [];
+        // foreach ($sorted as $key => $friendsWithMsg) {
+        //     foreach ($msg as $key => $msgs) {
+        //         if (($msgs->user_one == $friendsWithMsg->id && $msgs->user_two == $id) || ($msgs->user_two == $friendsWithMsg->id && $msgs->user_one == $id)) {
+        //             $array1[] = $sorted->push($msgs);
+        //         }
+        //     }
+        // }
+
+        // return response()->json($array1, 200);
+
+        // $users = Contacts::where('user_one',$user_one)->where('user_two', $user_two)->orWhere(function($query) use($user_one, $user_two) {
+		// 	$query->where('user_one', $user_two)->where('user_two', $user_one);
+        // })->first();
+
+        // $msg = Messages::where('conv_id', $users->conv_id)->get();
+        // return response()->json($msg, 200);
     }
 
     public function addContact(Request $request, $id){
@@ -166,8 +182,12 @@ class UserController extends Controller
         if ($user->id == $id) {
             return response()->json(['msg'=>'You cannot add yourself as your contact'], 401);
         }
-
-        $check = Contacts::where('user_one', $id)->where('user_two', $user->id)->orWhere('user_one', $user->id)->orWhere('user_two', $id)->first();
+        
+        $user_two = $user->id;
+        //$check = Contacts::where('user_one', $id)->where('user_two', $user->id)->orWhere('user_one', $user->id)->orWhere('user_two', $id)->first();
+        $check = Contacts::where('user_one',$id)->where('user_two', $user_two)->orWhere(function($query) use($id, $user_two) {
+			$query->where('user_one',$user_two)->where('user_two', $id);
+        })->first();
 
         if ($check) {
             return response()->json(['msg'=>'This contact is already on your contact list'], 401);
