@@ -3,8 +3,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, Button, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, Image, Alert, ToastAndroid } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Container, Card, UserInfo, UserImgWrapper, UserImg, UserInfoText, UserName, PostTime, MessageText, TextSection } from '../styles/MessagesStyles';
-import { MenuProvider } from 'react-native-popup-menu';
-import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Constants from 'expo-constants';
@@ -31,7 +29,7 @@ const MessagesScreen = ({ navigation }) => {
                 const user_id = await AsyncStorage.getItem("@user_id")
                 const id = JSON.parse(user_id)
                 try {
-                    const res = await axios.get(`${webUrl}/getUser/${id}`)
+                    const res = await axios.get(`${url}/getUser/${id}`)
                     setUserObj(res.data)
                 } catch (e) {
                     console.log(e)
@@ -47,7 +45,7 @@ const MessagesScreen = ({ navigation }) => {
                 const user_id = await AsyncStorage.getItem("@user_id")
                 const id = JSON.parse(user_id)
                 try {
-                    const res = await axios.get(`${webUrl}/getFriends/${id}`)
+                    const res = await axios.get(`${url}/getFriends/${id}`)
                     setFriends(res.data)
                 } catch (e) {
                     console.log(e)
@@ -56,13 +54,6 @@ const MessagesScreen = ({ navigation }) => {
             fetchUser();
         }, [])
     );
-
-    const logout = async () => {
-        const id = await AsyncStorage.removeItem('@user_id')
-        if (id === null) {
-            navigation.navigate("Login")
-        }
-    }
 
     const emptyScreen = () => {
         return (
@@ -116,67 +107,65 @@ const MessagesScreen = ({ navigation }) => {
     }
 
     return (
-        <MenuProvider>
-            <SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.container}>
 
-                <View style={styles.headerBar}>
-                    <View>
-                        <Text style={styles.headerText}>Messenger</Text>
-                    </View>
-                    <View >
-                        <Menu>
-                            <MenuTrigger>
-                                <FontAwesome5 name='ellipsis-v' color='#000' size={25} style={{ padding: 10 }} />
-                            </MenuTrigger>
-                            <MenuOptions style={{ margin: 10 }}>
-                                <MenuOption onSelect={() => navigation.navigate('Profile', { userObj: userObj })} >
-                                    <Text style={{ fontSize: 18, padding: 7, }}>My profile</Text>
-                                </MenuOption>
-                                <MenuOption onSelect={() => navigation.navigate('AddContact', { userId: userObj.id })} >
-                                    <Text style={{ fontSize: 18, padding: 7, }}>Add contact</Text>
-                                </MenuOption>
-                                <MenuOption onSelect={() => alert(`Save`)} >
-                                    <Text style={{ fontSize: 18, padding: 7, }}>Create group</Text>
-                                </MenuOption>
-                                <MenuOption onSelect={logout} >
-                                    <Text style={{ fontSize: 18, padding: 7, }}>Logout</Text>
-                                </MenuOption>
-                            </MenuOptions>
-                        </Menu>
-                    </View>
+            {/* <View style={styles.headerBar}>
+                <View>
+                    <Text style={styles.headerText}>Messenger</Text>
                 </View>
+                <View >
+                    <Menu>
+                        <MenuTrigger>
+                            <FontAwesome5 name='ellipsis-v' color='#000' size={25} style={{ padding: 10 }} />
+                        </MenuTrigger>
+                        <MenuOptions style={{ margin: 10 }}>
+                            <MenuOption onSelect={() => navigation.navigate('Profile', { userObj: userObj })} >
+                                <Text style={{ fontSize: 18, padding: 7, }}>My profile</Text>
+                            </MenuOption>
+                            <MenuOption onSelect={() => navigation.navigate('AddContact', { userId: userObj.id })} >
+                                <Text style={{ fontSize: 18, padding: 7, }}>Add contact</Text>
+                            </MenuOption>
+                            <MenuOption onSelect={() => alert(`Save`)} >
+                                <Text style={{ fontSize: 18, padding: 7, }}>Create group</Text>
+                            </MenuOption>
+                            <MenuOption onSelect={logout} >
+                                <Text style={{ fontSize: 18, padding: 7, }}>Logout</Text>
+                            </MenuOption>
+                        </MenuOptions>
+                    </Menu>
+                </View>
+            </View> */}
 
-                <Container >
-                    <FlatList
-                        data={friends.sort((a,b)=> b.created_at - a.created_at)}
-                        keyExtractor={item => item.id}
-                        ListEmptyComponent={emptyScreen}
-                        renderItem={({ item }) => (
-                            <Card
-                                onLongPress={()=>alert(userObj.id, item.id)}
-                                onPress={() => navigation.navigate('Chats', { userTwoObj: item, userOneObj: userObj, userName: item.username })}
-                            >
-                                <UserInfo>
-                                    <UserImgWrapper>
-                                        <UserImg source={{ uri: item.image }} />
-                                    </UserImgWrapper>
-                                    <TextSection>
-                                        <UserInfoText>
-                                            <UserName numberOfLines={1}>{item.username}</UserName>
-                                            <PostTime>{moment(item.created_at).fromNow()}</PostTime>
-                                        </UserInfoText>
-                                        <MessageText numberOfLines={2}>{item.email}</MessageText>
-                                    </TextSection>
-                                </UserInfo>
-                            </Card>
-                        )}
-                    />
-                </Container>
-                <TouchableOpacity style={styles.floatingActionBtn} onPress={() => navigation.navigate('AddContact', { userId: userObj.id })}>
-                    <FontAwesome5 name="plus" size={25} color="#fff" />
-                </TouchableOpacity>
-            </SafeAreaView>
-        </MenuProvider>
+            <Container >
+                <FlatList
+                    data={friends.sort((a,b)=> b.created_at - a.created_at)}
+                    keyExtractor={item => item.id}
+                    ListEmptyComponent={emptyScreen}
+                    renderItem={({ item }) => (
+                        <Card
+                            onLongPress={()=>alert(userObj.id, item.id)}
+                            onPress={() => navigation.navigate('Chats', { userTwoObj: item, userOneObj: userObj, userName: item.username })}
+                        >
+                            <UserInfo>
+                                <UserImgWrapper>
+                                    <UserImg source={{ uri: item.image }} />
+                                </UserImgWrapper>
+                                <TextSection>
+                                    <UserInfoText>
+                                        <UserName numberOfLines={1}>{item.username}</UserName>
+                                        <PostTime>{moment(item.created_at).fromNow()}</PostTime>
+                                    </UserInfoText>
+                                    <MessageText numberOfLines={2}>{item.email}</MessageText>
+                                </TextSection>
+                            </UserInfo>
+                        </Card>
+                    )}
+                />
+            </Container>
+            <TouchableOpacity style={styles.floatingActionBtn} onPress={() => navigation.navigate('AddContact', { userId: userObj.id })}>
+                <FontAwesome5 name="plus" size={25} color="#fff" />
+            </TouchableOpacity>
+        </SafeAreaView>
     )
 }
 

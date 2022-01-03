@@ -20,7 +20,7 @@ const ChatScreen = ({route, navigation}) => {
 
     useEffect(async() => {
         try {
-            const res = await axios.get(`${webUrl}/getMessages/${userOneObj.id}/${userTwoObj.id}`);
+            const res = await axios.get(`${url}/getMessages/${userOneObj.id}/${userTwoObj.id}`);
 
             let msg = res.data.map((msg)=> ({
                 _id: msg.id,
@@ -43,7 +43,7 @@ const ChatScreen = ({route, navigation}) => {
 
         const cusText = messages[0].text;
         try {
-            await axios.get(`${webUrl}/sendMsg/${userOneObj.id}/${userTwoObj.id}/${cusText}`)
+            await axios.get(`${url}/sendMsg/${userOneObj.id}/${userTwoObj.id}/${cusText}`)
             console.log('message send to database')
         } catch (error) {
             console.log(error.response.data)

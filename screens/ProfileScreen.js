@@ -21,15 +21,23 @@ const ProfileScreen = ({route, navigation}) => {
     const webUrl = `https://messenger.stokoza.co.za/public/api`
     
     const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1
-        })
-        if (!result.cancelled) {
-            setImage(result.uri)
+        const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+
+        if (granted === true) {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                base64: false,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1
+            })
+            if (!result.cancelled) {
+                setImage(result.uri)
+            }
+
+            //const filename = result.uri.split('/').pop();
         }
+
     }
 
     const saveProfile = async() => {
@@ -37,16 +45,29 @@ const ProfileScreen = ({route, navigation}) => {
         formData.append('username', username)
         formData.append('image', image)
         try {
-            const res = await axios.post(`${webUrl}/updateProfile/${userId}`, formData)
+            const res = await axios.post(`${url}/updateProfile/${userId}`, formData)
             ToastAndroid.show("Your profile was updated", ToastAndroid.SHORT);
         } catch (error) {
             setErrors(error.response.data)
         }
     }
 
+    const moveImage = async() => {
+        try {
+            // const fileInfo = await FileSystem.copyAsync({
+            //     from: image,
+            //     to: `file://C:/Users/Leago/Desktop/Projects/Messenger/assets/${image.split('/').pop()}`,
+            // })
+            await moveFile('source/unicorn.png', 'destination/unicorn.png');
+            console.log('The file has been moved');
+        } catch (error) {
+            console.log(error)
+        }
+        
+    }
+
     return (
         <SafeAreaView style={styles.container}>
-
             <View style={styles.profilePhoto}>
                 <View style={{ marginTop: 15 }}>
                     <ImageBackground
@@ -117,7 +138,7 @@ const ProfileScreen = ({route, navigation}) => {
                     {errors?.password ? <Text style={styles.errorMsg}>{errors.password}</Text>:  null}
 
                     <View style={styles.userItem} >
-                        <TouchableOpacity style={styles.saveButton} onPress={saveProfile}>
+                        <TouchableOpacity style={styles.saveButton} onPress={moveImage}>
                             <Text style={styles.saveTitle}>Save</Text>
                         </TouchableOpacity>
                     </View>

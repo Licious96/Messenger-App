@@ -18,7 +18,7 @@ const AddContact = ({route, navigation}) => {
         const formData = new FormData()
         formData.append('contact', contact)
         try {
-            const res = await axios.post(`${webUrl}/addContact/${userId}`, formData)
+            const res = await axios.post(`${url}/addContact/${userId}`, formData)
             ToastAndroid.show("Contact added", ToastAndroid.SHORT);
             navigation.navigate('Messages')
             setMsgError('')

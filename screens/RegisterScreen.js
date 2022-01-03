@@ -24,7 +24,7 @@ const RegisterScreen = ( {navigation} ) => {
         formData.append('password_confirmation', confirmPassword)
 
         try {
-            const res = await axios.post(`${webUrl}/register`, formData)
+            const res = await axios.post(`${url}/register`, formData)
             const jsonValue = JSON.stringify(res.data.id)
             await AsyncStorage.setItem('@user_id', jsonValue)
             navigation.navigate("AddProfile")
@@ -114,21 +114,22 @@ const styles = StyleSheet.create({
     },
 
     inputView: {
+        flex: 1,
         backgroundColor: "#2D4DF4",
         borderRadius: 30,
         width: "70%",
         height: 45,
         marginBottom: -3,
         alignItems: "center",
+        justifyContent: 'center'
     },
 
     TextInput: {
-        height: 50,
         flex: 1,
+        height: 50,
         padding: 10,
         color: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center'
+        textAlign: 'center'
     },
 
     forgot_button: {

@@ -20,10 +20,10 @@ const LoginScreen = ({ navigation }) => {
         formData.append('password', password)
 
         try {
-            const res = await axios.post(`${webUrl}/login`, formData)
+            const res = await axios.post(`${url}/login`, formData)
             const jsonValue = JSON.stringify(res.data.id)
             await AsyncStorage.setItem('@user_id', jsonValue)
-            navigation.navigate("Messages")
+            navigation.navigate("Home")
         } catch (error) {
             console.log(error.response.data)
             setErrors(error.response.data)
@@ -34,7 +34,7 @@ const LoginScreen = ({ navigation }) => {
         const user_idd = await AsyncStorage.getItem("@user_id")
         const id = JSON.parse(user_idd)
         if (id !== null) {
-            navigation.navigate('Messages');
+            navigation.navigate('Home');
         }
     },[userId])
 
@@ -104,11 +104,12 @@ const styles = StyleSheet.create({
     },
 
     TextInput: {
-        height: 50,
         flex: 1,
+        height: 50,
         padding: 10,
         color: '#fff',
         alignItems: 'center',
+        textAlign: 'center'
     },
 
     forgot_button: {

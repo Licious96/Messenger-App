@@ -50,9 +50,8 @@ const AddProfileScreen = ({ navigation }) => {
         formData.append('image', image)
 
         try {
-            const res = await axios.post(`${webUrl}/addProfile/${userId}`, formData)
-            console.log(res.data)
-            navigation.navigate("Messages")
+            const res = await axios.post(`${url}/addProfile/${userId}`, formData)
+            navigation.navigate("Home")
         } catch (error) {
             setError(error.response.data)
         }
