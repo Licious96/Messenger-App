@@ -21,7 +21,7 @@ const GroupMessages = ({ navigation }) => {
                 const user_id = await AsyncStorage.getItem("@user_id")
                 const id = JSON.parse(user_id)
                 try {
-                    const res = await axios.get(`${url}/getUser/${id}`)
+                    const res = await axios.get(`${webUrl}/getUser/${id}`)
                     setUserObj(res.data)
                 } catch (e) {
                     console.log(e)
@@ -37,7 +37,7 @@ const GroupMessages = ({ navigation }) => {
                 const user_id = await AsyncStorage.getItem("@user_id")
                 const id = JSON.parse(user_id)
                 try {
-                    const res = await axios.get(`${url}/getGroups/${id}`)
+                    const res = await axios.get(`${webUrl}/getGroups/${id}`)
                     setGroups(res.data)
                 } catch (e) {
                     console.log(e)
@@ -67,7 +67,7 @@ const GroupMessages = ({ navigation }) => {
                 },
                 {
                     text: "Delete",
-                    onPress: () => deleteContact(userOne, userTwo),
+                    onPress: () => alert('Delete not working now'),
                     style: "cancel",
                 },
             ],
@@ -81,7 +81,7 @@ const GroupMessages = ({ navigation }) => {
         const user_id = await AsyncStorage.getItem("@user_id")
         const id = JSON.parse(user_id)
         try {
-            const res = await axios.get(`${url}/getFriends/${id}`)
+            const res = await axios.get(`${webUrl}/getFriends/${id}`)
             setFriends(res.data)
         } catch (e) {
             console.log(e)
@@ -90,7 +90,7 @@ const GroupMessages = ({ navigation }) => {
 
     const deleteContact = async(userOne, userTwo) => {
         try {
-            await axios.post(`${url}/deleteContact/${userOne}/${userTwo}`)
+            await axios.post(`${uwebUrlrl}/deleteContact/${userOne}/${userTwo}`)
             ToastAndroid.show("Chat deleted", ToastAndroid.SHORT);
             getNewChats()
         } catch (error) {

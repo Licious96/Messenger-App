@@ -18,7 +18,7 @@ const AddParticipant = ({route, navigation}) => {
         const formData = new FormData()
         formData.append('contact', contact)
         try {
-            const res = await axios.post(`${url}/addParticipant/${convId}`, formData)
+            const res = await axios.post(`${webUrl}/addParticipant/${convId}`, formData)
             ToastAndroid.show("Contact added to this group", ToastAndroid.SHORT);
             navigation.navigate('Home')
             setMsgError('')

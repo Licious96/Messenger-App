@@ -20,7 +20,7 @@ const LoginScreen = ({ navigation }) => {
         formData.append('password', password)
 
         try {
-            const res = await axios.post(`${url}/login`, formData)
+            const res = await axios.post(`${webUrl}/login`, formData)
             const jsonValue = JSON.stringify(res.data.id)
             await AsyncStorage.setItem('@user_id', jsonValue)
             navigation.navigate("Home")

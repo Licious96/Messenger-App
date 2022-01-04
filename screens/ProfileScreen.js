@@ -34,8 +34,6 @@ const ProfileScreen = ({route, navigation}) => {
             if (!result.cancelled) {
                 setImage(result.uri)
             }
-
-            //const filename = result.uri.split('/').pop();
         }
 
     }
@@ -45,25 +43,11 @@ const ProfileScreen = ({route, navigation}) => {
         formData.append('username', username)
         formData.append('image', image)
         try {
-            const res = await axios.post(`${url}/updateProfile/${userId}`, formData)
+            const res = await axios.post(`${webUrl}/updateProfile/${userId}`, formData)
             ToastAndroid.show("Your profile was updated", ToastAndroid.SHORT);
         } catch (error) {
             setErrors(error.response.data)
         }
-    }
-
-    const moveImage = async() => {
-        try {
-            // const fileInfo = await FileSystem.copyAsync({
-            //     from: image,
-            //     to: `file://C:/Users/Leago/Desktop/Projects/Messenger/assets/${image.split('/').pop()}`,
-            // })
-            await moveFile('source/unicorn.png', 'destination/unicorn.png');
-            console.log('The file has been moved');
-        } catch (error) {
-            console.log(error)
-        }
-        
     }
 
     return (
@@ -138,7 +122,7 @@ const ProfileScreen = ({route, navigation}) => {
                     {errors?.password ? <Text style={styles.errorMsg}>{errors.password}</Text>:  null}
 
                     <View style={styles.userItem} >
-                        <TouchableOpacity style={styles.saveButton} onPress={moveImage}>
+                        <TouchableOpacity style={styles.saveButton} onPress={saveProfile}>
                             <Text style={styles.saveTitle}>Save</Text>
                         </TouchableOpacity>
                     </View>

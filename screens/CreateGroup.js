@@ -18,7 +18,7 @@ const CreateGroup = ({route, navigation}) => {
         const formData = new FormData();
         formData.append('name', name)
         try {
-            const res = await axios.post(`${url}/createGroup/${userId}`, formData)
+            const res = await axios.post(`${webUrl}/createGroup/${userId}`, formData)
             ToastAndroid.show("Group created", ToastAndroid.SHORT);
             navigation.navigate('Home')
             setMsgError('')

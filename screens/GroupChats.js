@@ -20,7 +20,7 @@ const ChatScreen = ({route}) => {
 
     useEffect(async() => {
         try {
-            const res = await axios.get(`${url}/getMsgs/${userOneObj.id}/${convId}`);
+            const res = await axios.get(`${webUrl}/getMsgs/${userOneObj.id}/${convId}`);
 
             let msg = res.data.map((msg)=> ({
                 _id: msg.id,
@@ -37,12 +37,12 @@ const ChatScreen = ({route}) => {
         } catch (error) {
             console.log(error.response.data)
         }
-    }, [])
+    }, [messages])
 
     const onSend = useCallback(async(messages = []) => {
         const cusText = messages[0].text;
         try {
-            await axios.get(`${url}/sendMessage/${userOneObj.id}/${convId}/${cusText}`)
+            await axios.get(`${webUrl}/sendMessage/${userOneObj.id}/${convId}/${cusText}`)
         } catch (error) {
             console.log(error.response.data)
         }

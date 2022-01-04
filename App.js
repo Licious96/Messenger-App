@@ -25,12 +25,14 @@ export default function App() {
   const [userObj, setUserObj] = useState({})
   const { manifest } = Constants
   const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
+  const webUrl = `https://messenger.stokoza.co.za/public/api`
+
 
   useEffect(async () => {
     const user_id = await AsyncStorage.getItem("@user_id")
     const id = JSON.parse(user_id)
     try {
-      const res = await axios.get(`${url}/getUser/${id}`)
+      const res = await axios.get(`${webUrl}/getUser/${id}`)
       setUserObj(res.data)
     } catch (e) {
       console.log(e)

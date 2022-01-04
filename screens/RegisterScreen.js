@@ -24,7 +24,7 @@ const RegisterScreen = ( {navigation} ) => {
         formData.append('password_confirmation', confirmPassword)
 
         try {
-            const res = await axios.post(`${url}/register`, formData)
+            const res = await axios.post(`${webUrl}/register`, formData)
             const jsonValue = JSON.stringify(res.data.id)
             await AsyncStorage.setItem('@user_id', jsonValue)
             navigation.navigate("AddProfile")
