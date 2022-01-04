@@ -8,20 +8,12 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 import moment from 'moment';
 
-const MessagesScreen = ({ navigation }) => {
+const GroupMessages = ({ navigation }) => {
     const [userObj, setUserObj] = useState({})
-    const [friends, setFriends] = useState([])
+    const [groups, setGroups] = useState([])
     const { manifest } = Constants
     const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
     const webUrl = `https://messenger.stokoza.co.za/public/api`
-
-    useEffect(async () => {
-        const user_idd = await AsyncStorage.getItem("@user_id")
-        const id = JSON.parse(user_idd)
-        if (id === null) {
-            navigation.navigate('Login');
-        }
-    }, [])
 
     useFocusEffect(
         React.useCallback(() => {
@@ -45,8 +37,8 @@ const MessagesScreen = ({ navigation }) => {
                 const user_id = await AsyncStorage.getItem("@user_id")
                 const id = JSON.parse(user_id)
                 try {
-                    const res = await axios.get(`${url}/getFriends/${id}`)
-                    setFriends(res.data)
+                    const res = await axios.get(`${url}/getGroups/${id}`)
+                    setGroups(res.data)
                 } catch (e) {
                     console.log(e)
                 }
@@ -59,7 +51,7 @@ const MessagesScreen = ({ navigation }) => {
         return (
             <View style={styles.emptyContainer}>
                 <FontAwesome5 name="comments" size={80} color="#666" />
-                <Text style={styles.text}>Chats empty, please press the plus button to add new contacts to chat with</Text>
+                <Text style={styles.text}>Chats empty, please create a new group to chat</Text>
             </View>
         )
     }
@@ -106,47 +98,38 @@ const MessagesScreen = ({ navigation }) => {
         }
     }
 
-    const logout = async ({navigation}) => {
-        await AsyncStorage.removeItem('@user_id')
-        navigation.navigate("Login")
-    }
-
     return (
         <SafeAreaView style={styles.container}>
             <Container >
                 <FlatList
-                    data={friends.sort((a,b)=> b.created_at - a.created_at)}
+                    data={groups}
                     keyExtractor={item => item.id}
                     ListEmptyComponent={emptyScreen}
                     renderItem={({ item }) => (
                         <Card
                             onLongPress={()=>alert(userObj.id, item.id)}
-                            onPress={() => navigation.navigate('Chats', { userTwoObj: item, userOneObj: userObj, userName: item.username })}
+                            onPress={() => navigation.navigate('GroupChat', { userTwoObj: item, userOneObj: userObj, userName: item.name, convId: item.conv_id })}
                         >
                             <UserInfo>
                                 <UserImgWrapper>
-                                    <UserImg source={{ uri: item.image }} />
+                                    <UserImg source={{ uri: item.image !== '' ? item.image: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" }} />
                                 </UserImgWrapper>
                                 <TextSection>
                                     <UserInfoText>
-                                        <UserName numberOfLines={1}>{item.username}</UserName>
+                                        <UserName numberOfLines={1}>{item.name}</UserName>
                                         <PostTime>{moment(item.created_at).fromNow()}</PostTime>
                                     </UserInfoText>
-                                    <MessageText numberOfLines={2}>{item.email}</MessageText>
                                 </TextSection>
                             </UserInfo>
                         </Card>
                     )}
                 />
             </Container>
-            <TouchableOpacity style={styles.floatingActionBtn} onPress={() => navigation.navigate('AddContact', { userId: userObj.id })}>
-                <FontAwesome5 name="plus" size={25} color="#fff" />
-            </TouchableOpacity>
         </SafeAreaView>
     )
 }
 
-export default MessagesScreen
+export default GroupMessages
 
 const styles = StyleSheet.create({
     container: {

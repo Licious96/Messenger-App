@@ -3,14 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contacts;
+use App\Models\Group;
+use App\Models\GroupMessages;
 use App\Models\User;
 use App\Models\Messages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
-
-use function PHPUnit\Framework\returnSelf;
 
 class UserController extends Controller
 {
@@ -130,31 +129,6 @@ class UserController extends Controller
         $ids = array_merge($ids1, $ids2);
         $sorted = User::whereIn('id', $ids)->get();    
         return response()->json($sorted, 200);
-
-        // $array = [];
-        // foreach ($sorted as $key => $friends) {
-        //     $array[] = $friends->id;
-        // }
-
-        // $msg = Messages::whereIn('user_one', $array)->orWhereIn('user_two', $array)->get();
-
-        // $array1 = [];
-        // foreach ($sorted as $key => $friendsWithMsg) {
-        //     foreach ($msg as $key => $msgs) {
-        //         if (($msgs->user_one == $friendsWithMsg->id && $msgs->user_two == $id) || ($msgs->user_two == $friendsWithMsg->id && $msgs->user_one == $id)) {
-        //             $array1[] = $sorted->push($msgs);
-        //         }
-        //     }
-        // }
-
-        // return response()->json($array1, 200);
-
-        // $users = Contacts::where('user_one',$user_one)->where('user_two', $user_two)->orWhere(function($query) use($user_one, $user_two) {
-		// 	$query->where('user_one', $user_two)->where('user_two', $user_one);
-        // })->first();
-
-        // $msg = Messages::where('conv_id', $users->conv_id)->get();
-        // return response()->json($msg, 200);
     }
 
     public function addContact(Request $request, $id){
@@ -233,6 +207,100 @@ class UserController extends Controller
         })->first();
 
         $msg = Messages::where('conv_id', $users->conv_id)->get();
+        return response()->json($msg, 200);
+
+    }
+
+    public function createGroup(Request $request, $id){
+        $date = date('H:i:s');
+        $conv_id = preg_replace("/[^A-Za-z0-9]/", "", $date);
+
+        $fields = Validator::make(
+            $request->all(),
+            [
+                'name' => 'required',
+            ]
+        );
+
+        if ($fields->fails()) {
+            return response()->json($fields->errors(), 400);
+        }
+
+        $group = Group::create([
+            'user_one' => $id,
+            'name' => $request->name,
+            'conv_id' => $conv_id,
+            //'image' => $request->image
+        ]);
+
+        return response()->json($group, 200);
+    }
+
+    public function getGroups($id){
+
+        $array = Group::where('user_one', $id)->pluck('conv_id')->toArray();
+        $sorted = Group::whereIn('conv_id', $array)->get();
+        $unique = $sorted->unique('conv_id');    
+        return response()->json($unique, 200);
+    }
+
+    public function addParticipant(Request $request, $id){
+
+        $fields = Validator::make(
+            $request->all(),
+            [
+                'contact' => 'required',
+            ]
+        );
+
+        if ($fields->fails()) {
+            return response()->json($fields->errors(), 400);
+        }
+
+        $user = User::where('email', $request['contact'])->orWhere('contacts', $request['contact'])->first();
+
+        if (!$user) {
+            return response()->json(['msg'=>'The contact you are trying to add does not have a chat messenger app'], 404);
+        }
+
+        $group = Group::where('conv_id', $id)->where('user_one', $user->id)->first();
+
+        if ($group) {
+            return response()->json(['msg'=>'This contact is already on this group'], 401);
+        }
+
+        $group_name = Group::where('conv_id', $id)->first();
+
+        $group = Group::create([
+            'user_one' => $user->id,
+            'name' => $group_name->name,
+            'conv_id' => $id,
+            //'image' => $request->image
+        ]);
+
+        if ($group) {
+           return response()->json($group, 201);  
+        }
+    }
+
+    public function sendMessage($id, $conv_id, $text){
+
+        $user = User::find($id);
+
+        $newMsg = GroupMessages::create([
+            'user_one' => $id,
+            'username' => $user->username,
+            'conv_id' => $conv_id,
+            'text' => $text,
+            'image' => $user->image,
+        ]);
+
+        return $newMsg;
+    }
+
+    public function getMsgs($user_one, $conv_id){
+
+        $msg = GroupMessages::where('conv_id', $conv_id)->get();
         return response()->json($msg, 200);
 
     }

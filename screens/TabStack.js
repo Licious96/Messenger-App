@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text } from 'react-native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import MessagesScreen from './MessagesScreen';
-import Group from './Group';
+import GroupMessages from './GroupMessages';
 
 const Tab = createMaterialTopTabNavigator()
 
@@ -23,7 +23,7 @@ const TabStack = ({navigation}) => {
                 },
             }}>
             <Tab.Screen name="FirstPage" component={MessagesScreen} options={{ tabBarLabel: 'Chats', }} />
-            <Tab.Screen name="Group" component={Group} options={{ tabBarLabel: 'Groups', }} />
+            <Tab.Screen name="Group" component={GroupMessages} options={{ tabBarLabel: 'Groups', }} />
         </Tab.Navigator>
     )
 }

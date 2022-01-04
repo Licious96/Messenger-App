@@ -25,6 +25,11 @@ Route::get('/sendMsg/{id1}/{id2}/{text}', [UserController::class, 'sendMsg']);
 Route::post('/addContact/{id}', [UserController::class, 'addContact']);
 Route::post('/deleteContact/{id1}/{id2}', [UserController::class, 'deleteContact']);
 Route::get('/getMessages/{id1}/{id2}', [UserController::class, 'getMessages']);
+Route::post('/createGroup/{id}', [UserController::class, 'createGroup']);
+Route::post('/addParticipant/{id}', [UserController::class, 'addParticipant']);
+Route::get('/getGroups/{id}', [UserController::class, 'getGroups']);
+Route::get('/sendMessage/{id}/{conv_id}/{text}', [UserController::class, 'sendMessage']);
+Route::get('/getMsgs/{id}/{conv_id}/', [UserController::class, 'getMsgs']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

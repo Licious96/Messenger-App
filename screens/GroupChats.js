@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useLayoutEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, ScrollView, Text, Button, StyleSheet, Image } from 'react-native';
 import { Bubble, GiftedChat, Send, Composer, Actions } from 'react-native-gifted-chat';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -8,11 +9,10 @@ import Constants from 'expo-constants';
 import {LocationView} from '../components/LocationView'
 import moment from 'moment';
 
-const ChatScreen = ({route, navigation}) => {
+const ChatScreen = ({route}) => {
 
     const {userOneObj} = route.params
-    const {userTwoObj} = route.params
-
+    const convId = route.params.convId
     const [messages, setMessages] = useState([]);
     const { manifest } = Constants
     const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
@@ -20,16 +20,16 @@ const ChatScreen = ({route, navigation}) => {
 
     useEffect(async() => {
         try {
-            const res = await axios.get(`${url}/getMessages/${userOneObj.id}/${userTwoObj.id}`);
-            console.log('useeffect running')
+            const res = await axios.get(`${url}/getMsgs/${userOneObj.id}/${convId}`);
+
             let msg = res.data.map((msg)=> ({
                 _id: msg.id,
                 text: msg.text,
                 createdAt: msg.created_at,
                 user: {
                     _id: msg.user_one,
-                    name: userOneObj.id == msg.user_one ? userOneObj.username : userTwoObj.username,
-                    avatar: userOneObj.id == msg.user_one ? userOneObj.image : userTwoObj.image,
+                    name: msg.username,
+                    avatar: msg.image,
                 }
             }))
             const sorted = msg.reverse()
@@ -37,13 +37,12 @@ const ChatScreen = ({route, navigation}) => {
         } catch (error) {
             console.log(error.response.data)
         }
-    }, [messages])
+    }, [])
 
     const onSend = useCallback(async(messages = []) => {
-
         const cusText = messages[0].text;
         try {
-            await axios.get(`${url}/sendMsg/${userOneObj.id}/${userTwoObj.id}/${cusText}`)
+            await axios.get(`${url}/sendMessage/${userOneObj.id}/${convId}/${cusText}`)
         } catch (error) {
             console.log(error.response.data)
         }
@@ -151,6 +150,7 @@ const ChatScreen = ({route, navigation}) => {
             }}
             renderBubble={renderBubble}
             alwaysShowSend
+            renderUsernameOnMessage={true}
             renderSend={renderSend}
             scrollToBottom
             scrollToBottomComponent={scrollToBottomComponent}
