@@ -20,7 +20,7 @@ const AddContact = ({route, navigation}) => {
         try {
             const res = await axios.post(`${webUrl}/addContact/${userId}`, formData)
             ToastAndroid.show("Contact added", ToastAndroid.SHORT);
-            navigation.navigate('Messages')
+            navigation.navigate('Home')
             setMsgError('')
         } catch (error) {
             setErrors(error.response.data)
