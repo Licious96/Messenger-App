@@ -18,9 +18,9 @@ const ChatScreen = ({route, navigation}) => {
     const webUrl = `https://messenger.stokoza.co.za/public/api`
 
     useEffect(async() => {
+        console.log('running')
         try {
             const res = await axios.get(`${webUrl}/getMessages/${userOneObj.id}/${userTwoObj.id}`);
-            console.log('useeffect running')
             let msg = res.data.map((msg)=> ({
                 _id: msg.id,
                 text: msg.text,
@@ -37,6 +37,27 @@ const ChatScreen = ({route, navigation}) => {
             console.log(error.response.data)
         }
     }, [messages])
+
+    const getMessages = async() => {
+        try {
+            const res = await axios.get(`${webUrl}/getMessages/${userOneObj.id}/${userTwoObj.id}`);
+            console.log('got new message')
+            let msg = res.data.map((msg)=> ({
+                _id: msg.id,
+                text: msg.text,
+                createdAt: msg.created_at,
+                user: {
+                    _id: msg.user_one,
+                    name: userOneObj.id == msg.user_one ? userOneObj.username : userTwoObj.username,
+                    avatar: userOneObj.id == msg.user_one ? userOneObj.image : userTwoObj.image,
+                }
+            }))
+            const sorted = msg.reverse()
+            setMessages(sorted)
+        } catch (error) {
+            console.log(error.response.data)
+        }
+    }
 
     const onSend = useCallback(async(messages = []) => {
 

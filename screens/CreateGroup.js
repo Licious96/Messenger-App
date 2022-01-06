@@ -9,6 +9,7 @@ const CreateGroup = ({route, navigation}) => {
     const userId = route.params.userId
     const [errors, setErrors] = useState('')
     const [name, setName] = useState('')
+    const [image, setImage] = useState('https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png')
     const [msgError, setMsgError] = useState('')
     const { manifest } = Constants
     const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
@@ -17,6 +18,7 @@ const CreateGroup = ({route, navigation}) => {
     const createGroup = async() => {
         const formData = new FormData();
         formData.append('name', name)
+        formData.append('image', image)
         try {
             const res = await axios.post(`${webUrl}/createGroup/${userId}`, formData)
             ToastAndroid.show("Group created", ToastAndroid.SHORT);

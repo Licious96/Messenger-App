@@ -5,6 +5,7 @@ import * as ImagePicker from 'expo-image-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Constants from 'expo-constants';
+import * as FileSystem from 'expo-file-system';
 
 const ProfileScreen = ({route, navigation}) => {
 
@@ -26,8 +27,7 @@ const ProfileScreen = ({route, navigation}) => {
         if (granted === true) {
             let result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                base64: false,
-                allowsEditing: true,
+                data: false,
                 aspect: [4, 3],
                 quality: 1
             })
@@ -48,6 +48,15 @@ const ProfileScreen = ({route, navigation}) => {
         } catch (error) {
             setErrors(error.response.data)
         }
+    }
+
+    const moveImage = () => {
+        const res = FileSystem.copyAsync({
+            from: 'file://C:/Users/Leago/Downloads/prudie.jpg',
+            to: 'file://C:/Users/Leago/Downloads/prudie.jpg'
+        })
+
+        console.log(res)
     }
 
     return (

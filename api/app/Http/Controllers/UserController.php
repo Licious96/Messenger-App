@@ -230,7 +230,7 @@ class UserController extends Controller
             'user_one' => $id,
             'name' => $request->name,
             'conv_id' => $conv_id,
-            //'image' => $request->image
+            'image' => $request->image
         ]);
 
         return response()->json($group, 200);

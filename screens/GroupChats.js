@@ -37,7 +37,7 @@ const ChatScreen = ({route}) => {
         } catch (error) {
             console.log(error.response.data)
         }
-    }, [messages])
+    }, [])
 
     const onSend = useCallback(async(messages = []) => {
         const cusText = messages[0].text;

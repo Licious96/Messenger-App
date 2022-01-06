@@ -11,7 +11,6 @@ class Group extends Model
     protected $fillable = [
         'name',
         'user_one',
-        'user_two',
         'conv_id',
         'image',
     ];
