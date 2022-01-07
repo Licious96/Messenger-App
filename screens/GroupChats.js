@@ -7,7 +7,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import Constants from 'expo-constants';
 import {LocationView} from '../components/LocationView'
-import moment from 'moment';
 
 const ChatScreen = ({route}) => {
 
@@ -37,7 +36,7 @@ const ChatScreen = ({route}) => {
         } catch (error) {
             console.log(error.response.data)
         }
-    }, [])
+    }, [messages])
 
     const onSend = useCallback(async(messages = []) => {
         const cusText = messages[0].text;

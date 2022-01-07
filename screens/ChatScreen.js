@@ -6,61 +6,72 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import Constants from 'expo-constants';
 import {LocationView} from '../components/LocationView'
-import moment from 'moment';
+import * as Location from 'expo-location';
 
 const ChatScreen = ({route, navigation}) => {
 
     const {userOneObj} = route.params
     const {userTwoObj} = route.params
     const [messages, setMessages] = useState([]);
+    const [location, setLocation] = useState(null);
     const { manifest } = Constants
     const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
     const webUrl = `https://messenger.stokoza.co.za/public/api`
 
-    useEffect(async() => {
-        console.log('running')
-        try {
-            const res = await axios.get(`${webUrl}/getMessages/${userOneObj.id}/${userTwoObj.id}`);
-            let msg = res.data.map((msg)=> ({
-                _id: msg.id,
-                text: msg.text,
-                createdAt: msg.created_at,
-                user: {
-                    _id: msg.user_one,
-                    name: userOneObj.id == msg.user_one ? userOneObj.username : userTwoObj.username,
-                    avatar: userOneObj.id == msg.user_one ? userOneObj.image : userTwoObj.image,
-                }
-            }))
-            const sorted = msg.reverse()
-            setMessages(sorted)
-        } catch (error) {
-            console.log(error.response.data)
+    const locationPersmission = async() => {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            alert('Permission to access location was denied');
+            return;
         }
-    }, [messages])
 
-    const getMessages = async() => {
-        try {
-            const res = await axios.get(`${webUrl}/getMessages/${userOneObj.id}/${userTwoObj.id}`);
-            console.log('got new message')
-            let msg = res.data.map((msg)=> ({
-                _id: msg.id,
-                text: msg.text,
-                createdAt: msg.created_at,
-                user: {
-                    _id: msg.user_one,
-                    name: userOneObj.id == msg.user_one ? userOneObj.username : userTwoObj.username,
-                    avatar: userOneObj.id == msg.user_one ? userOneObj.image : userTwoObj.image,
-                }
-            }))
-            const sorted = msg.reverse()
-            setMessages(sorted)
-        } catch (error) {
-            console.log(error.response.data)
-        }
+        const location = await Location.getCurrentPositionAsync({});
+        setLocation(location);
     }
 
-    const onSend = useCallback(async(messages = []) => {
+    const sendLocation = async(messages = []) => {
+        locationPersmission()
+        const location = await Location.getCurrentPositionAsync({});
+        const cusText = null;
+        const latitude = JSON.stringify(location.coords.latitude)
+        const longitude = JSON.stringify(location.coords.longitude)
+        try {
+            await axios.get(`${webUrl}/sendLocation/${userOneObj.id}/${userTwoObj.id}/${cusText}/${latitude}/${longitude}`)
+        } catch (error) {
+            console.log(error.response.data)
+        }
+        setMessages((previousMessages) =>
+            GiftedChat.append(previousMessages, messages),
+        );
+    }
 
+    useEffect(async() => {
+        try {
+            const res = await axios.get(`${webUrl}/getMessages/${userOneObj.id}/${userTwoObj.id}`);
+            let msg = res.data.map((msg)=> ({
+                _id: msg.id,
+                text: msg.text,
+                createdAt: msg.created_at,
+                location: {
+                    latitude: msg.latitude,
+                    longitude: msg.longitude,
+                },
+                user: {
+                    _id: msg.user_one,
+                    name: userOneObj.id == msg.user_one ? userOneObj.username : userTwoObj.username,
+                    avatar: userOneObj.id == msg.user_one ? userOneObj.image : userTwoObj.image,
+                }
+            }))
+            const sorted = msg.reverse()
+            setMessages(sorted)
+        } catch (error) {
+            console.log(error.response.data)
+        }
+
+    }, [messages])
+
+
+    const onSend = useCallback(async(messages = []) => {
         const cusText = messages[0].text;
         try {
             await axios.get(`${webUrl}/sendMsg/${userOneObj.id}/${userTwoObj.id}/${cusText}`)
@@ -68,7 +79,18 @@ const ChatScreen = ({route, navigation}) => {
             console.log(error.response.data)
         }
         setMessages((previousMessages) =>
-            GiftedChat.append(previousMessages, messages),
+            GiftedChat.append(previousMessages, [{
+                _id: 9999,
+                text: cusText,
+                createdAt: new Date(),
+                location: {
+                    latitude: null,
+                    longitude: null,
+                },
+                user: {
+                  _id: userOneObj.id,
+                },
+            }]),
         );
     }, []);
 
@@ -89,7 +111,7 @@ const ChatScreen = ({route, navigation}) => {
 
     const renderBubble = (props) => {
         const {currentMessage} = props
-        if (currentMessage.location) {
+        if (currentMessage.location.latitude !== null) {
             return <LocationView location={currentMessage.location} />
         }
         return (
@@ -152,7 +174,7 @@ const ChatScreen = ({route, navigation}) => {
           )}
           options={{
             'Share live location': () => {
-              console.log('Choose From Library');
+                sendLocation()
             },
             Cancel: () => {
               console.log('Cancel');

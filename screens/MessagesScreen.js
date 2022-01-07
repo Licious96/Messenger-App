@@ -106,11 +106,6 @@ const MessagesScreen = ({ navigation }) => {
         }
     }
 
-    const logout = async ({navigation}) => {
-        await AsyncStorage.removeItem('@user_id')
-        navigation.navigate("Login")
-    }
-
     return (
         <SafeAreaView style={styles.container}>
             <Container >

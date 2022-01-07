@@ -19,6 +19,8 @@ class CreateMessagesTable extends Migration
             $table->integer('user_two');
             $table->integer('conv_id');
             $table->string('text');
+            $table->double('latitude')->default(null);
+            $table->double('longitude')->default(null);
             $table->timestamps();
         });
     }

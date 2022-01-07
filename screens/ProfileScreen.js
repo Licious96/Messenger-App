@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, SafeAreaView, StyleSheet, TextInput, TouchableOpacity, ImageBackground, Text, ScrollView, ToastAndroid } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker'
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Constants from 'expo-constants';
-import * as FileSystem from 'expo-file-system';
 
 const ProfileScreen = ({route, navigation}) => {
 
@@ -48,15 +46,6 @@ const ProfileScreen = ({route, navigation}) => {
         } catch (error) {
             setErrors(error.response.data)
         }
-    }
-
-    const moveImage = () => {
-        const res = FileSystem.copyAsync({
-            from: 'file://C:/Users/Leago/Downloads/prudie.jpg',
-            to: 'file://C:/Users/Leago/Downloads/prudie.jpg'
-        })
-
-        console.log(res)
     }
 
     return (

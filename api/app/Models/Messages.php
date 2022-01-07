@@ -14,6 +14,8 @@ class Messages extends Model
         'user_two',
         'conv_id',
         'text',
+        'latitude',
+        'longitude'
     ];
 
     public function user(){

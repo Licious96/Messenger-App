@@ -56,10 +56,10 @@ const GroupMessages = ({ navigation }) => {
         )
     }
 
-    const alert = (userOne, userTwo) => {
+    const alert = (userOne, convId) => {
         Alert.alert(
-            "Remove chat",
-            "Are you sure you want to delete this chat?",
+            "Remove group",
+            "Are you sure you want to delete this group?",
             [
                 {
                     text: "Cancel",
@@ -67,7 +67,7 @@ const GroupMessages = ({ navigation }) => {
                 },
                 {
                     text: "Delete",
-                    onPress: () => alert('Delete not working now'),
+                    onPress: () => deleteGroup(userOne, convId),
                     style: "cancel",
                 },
             ],
@@ -81,17 +81,19 @@ const GroupMessages = ({ navigation }) => {
         const user_id = await AsyncStorage.getItem("@user_id")
         const id = JSON.parse(user_id)
         try {
-            const res = await axios.get(`${webUrl}/getFriends/${id}`)
-            setFriends(res.data)
+            const res = await axios.get(`${webUrl}/getGroups/${id}`)
+            console.log(res.data)
+            setGroups(res.data)
         } catch (e) {
             console.log(e)
         }
     }
 
-    const deleteContact = async(userOne, userTwo) => {
+    const deleteGroup = async(userOne, convId) => {
+        console.log('delete')
         try {
-            await axios.post(`${uwebUrlrl}/deleteContact/${userOne}/${userTwo}`)
-            ToastAndroid.show("Chat deleted", ToastAndroid.SHORT);
+            await axios.post(`${webUrl}/deleteGroup/${userOne}/${convId}`)
+            ToastAndroid.show("Group deleted", ToastAndroid.SHORT);
             getNewChats()
         } catch (error) {
             console.log(error.response.data)
@@ -107,7 +109,7 @@ const GroupMessages = ({ navigation }) => {
                     ListEmptyComponent={emptyScreen}
                     renderItem={({ item }) => (
                         <Card
-                            onLongPress={()=>alert(userObj.id, item.id)}
+                            onLongPress={()=>alert(userObj.id, item.conv_id)}
                             onPress={() => navigation.navigate('GroupChat', { userTwoObj: item, userOneObj: userObj, userName: item.name, convId: item.conv_id })}
                         >
                             <UserInfo>

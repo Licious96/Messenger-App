@@ -197,7 +197,26 @@ class UserController extends Controller
             'text' => $text,
         ]);
 
-        return $newMsg;
+        return response()->json($newMsg, 201);
+    }
+
+    public function sendLocation($user_one, $user_two, $text, $latitude, $longitude){
+        $users = Contacts::where('user_one',$user_one)->where('user_two', $user_two)->orWhere(function($query) use($user_one, $user_two) {
+			$query->where('user_one', $user_two)->where('user_two', $user_one);
+        })->first();
+
+        $conv_id = $users->conv_id;
+
+        $newMsg = Messages::create([
+            'user_one' => $user_one,
+            'user_two' => $user_two,
+            'conv_id' => $conv_id,
+            'text' => $text,
+            'latitude' => $latitude,
+            'longitude' => $longitude
+        ]);
+
+        return response()->json($newMsg, 201);
     }
 
     public function getMessages($user_one, $user_two){
@@ -242,6 +261,12 @@ class UserController extends Controller
         $sorted = Group::whereIn('conv_id', $array)->get();
         $unique = $sorted->unique('conv_id');    
         return response()->json($unique, 200);
+    }
+
+    public function deleteGroup($userOne, $conv_id){
+        $result = Group::where('user_one', $userOne)->where('conv_id', $conv_id)->first();
+        $result->delete();
+        return response()->json(201);
     }
 
     public function addParticipant(Request $request, $id){
